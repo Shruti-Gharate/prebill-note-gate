@@ -1,0 +1,78 @@
+[
+  {
+    "id": "e1",
+    "clinician_id": "c1",
+    "note": "History: 68 year old here for routine follow up. Exam of the right eye (OD) shows a visually significant cataract. OCT of the right eye shows no macular edema. Assessment: cataract, right eye. Plan: discuss cataract extraction. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "H25.11", "description": "age-related cataract, right eye"},
+      {"code": "92134", "description": "OCT retina"}
+    ],
+    "gold_route": "submit"
+  },
+  {
+    "id": "e2",
+    "clinician_id": "c1",
+    "note": "History: blurry vision. Exam: lens changes consistent with cataract in the left eye (OS). No procedure performed today. Assessment: cataract, left eye. Plan: return in six months. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "H25.12", "description": "age-related cataract"},
+      {"code": "66984", "description": "cataract extraction"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e3",
+    "clinician_id": "c2",
+    "note": "IOP is elevated and the optic nerve looks cupped. Started a drop. Will see again. Patient left without a full dilated exam documented.",
+    "claim": [
+      {"code": "H40.11", "description": "glaucoma"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e4",
+    "clinician_id": "c2",
+    "note": "Diabetes follow up. Dilated exam of both eyes (OU) shows mild nonproliferative diabetic retinopathy with a few microaneurysms. No edema. OCT of both eyes is flat. Assessment: diabetic retinopathy, both eyes. Plan: continue systemic care, return in one year. Signed by Dr. Shah.",
+    "claim": [
+      {"code": "E11.329", "description": "diabetic retinopathy"},
+      {"code": "92134", "description": "OCT retina"}
+    ],
+    "gold_route": "submit"
+  },
+  {
+    "id": "e5",
+    "clinician_id": "c3",
+    "note": "Wet macular degeneration, left eye (OS). Performed intravitreal injection left eye after consent and a sterile prep. Tolerated well. Assessment and plan discussed. Signed by Dr. Nguyen.",
+    "claim": [
+      {"code": "H35.32", "description": "macular degeneration"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e6",
+    "clinician_id": "c3",
+    "note": "Glaucoma check, right eye (OD). Intraocular pressure is at goal on current drops. Humphrey visual field today is stable compared with last year. Assessment: stable glaucoma, right eye. Plan: continue drops. Signed by Dr. Nguyen.",
+    "claim": [
+      {"code": "H40.11", "description": "glaucoma"},
+      {"code": "92083", "description": "visual field"}
+    ],
+    "gold_route": "submit"
+  },
+  {
+    "id": "e7",
+    "clinician_id": "c1",
+    "note": "Came in for glasses. Vision is fine. No acute complaint. Told to return as needed. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "H25.11", "description": "age-related cataract"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e8",
+    "clinician_id": "c2",
+    "note": "Post-op day one after cataract extraction with IOL, left eye (OS). Wound is sealed, the chamber is deep, and the pressure is acceptable. Drop instructions were given and a one-week visit was scheduled. Signed by Dr. Shah.",
+    "claim": [
+      {"code": "Z96.1", "description": "presence of intraocular lens"}
+    ],
+    "gold_route": "submit"
+  }
+]
