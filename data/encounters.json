@@ -74,5 +74,59 @@
       {"code": "Z96.1", "description": "presence of intraocular lens"}
     ],
     "gold_route": "submit"
+  },
+  {
+    "id": "e9",
+    "clinician_id": "c1",
+    "note": "Exam of the right eye (OD) shows no cataract and a clear lens. The patient is here for a glasses check only. Vision is stable and no procedure was discussed. Counseling covered the findings, the drop schedule, and when to call. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "H25.11", "description": "age-related cataract, right eye"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e10",
+    "clinician_id": "c1",
+    "note": "Exam of the left eye (OS) shows a visually significant cataract. The right eye is clear. No procedure performed today. Plan: observe the left eye and return in six months. Counseling covered the findings and a return visit was scheduled. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "H25.11", "description": "age-related cataract, right eye"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e11",
+    "clinician_id": "c2",
+    "note": "History: cataract extraction with IOL was performed last year in the right eye (OD). Today is a pressure check only. The wound is quiet and no procedure was done at this visit. Counseling covered the findings and a return visit was scheduled. Signed by Dr. Shah.",
+    "claim": [
+      {"code": "66984", "description": "cataract extraction, right eye"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e12",
+    "clinician_id": "c2",
+    "note": "CE OD done today after consent. The wound is sealed, the chamber is deep, drop instructions were given, and a one-week visit was booked. The patient tolerated the case. Signed by Dr. Shah.",
+    "claim": [
+      {"code": "66984", "description": "cataract extraction, right eye"}
+    ],
+    "gold_route": "submit"
+  },
+  {
+    "id": "e13",
+    "clinician_id": "c1",
+    "note": "CE OD done today after consent. The wound is sealed, the chamber is deep, drop instructions were given, and a one-week visit was booked. The patient tolerated the case. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "66984", "description": "cataract extraction, right eye"}
+    ],
+    "gold_route": "review"
+  },
+  {
+    "id": "e14",
+    "clinician_id": "c1",
+    "note": "Cataract in the right eye (OD). Performed intravitreal injection in the left eye (OS) after consent and a sterile prep. The patient tolerated the injection well. Assessment was discussed and drop instructions were given. Signed by Dr. Adler.",
+    "claim": [
+      {"code": "67028", "description": "intravitreal injection, right eye"}
+    ],
+    "gold_route": "review"
   }
 ]

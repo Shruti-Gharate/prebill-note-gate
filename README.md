@@ -20,7 +20,9 @@ On each synthetic encounter the gate looks for:
 - a note with no signature line
 - a note too thin to trust, even if the codes look aligned
 
-`submit` means none of those fired. Anything else is `review`.
+`submit` means none of those fired. Anything else is `review`. A found sentence is not enough to submit. The encounter stays ineligible when that sentence denies the code, names the other eye, or describes another visit.
+
+A short phrasebook stores abbreviations from one surgeon's earlier notes. `CE` can be read as cataract extraction for the surgeon who writes it that way. The same letters from another surgeon stay unread, and the reading never adds a fact the current note left out.
 
 Each claim line also returns the sentence that supports it. A missing sentence is the unsupported-code flag. A downstream agent can quote that span, and a reviewer can check it without opening the rest of the chart.
 
@@ -43,6 +45,29 @@ Each claim line also returns the sentence that supports it. A missing sentence i
 }
 ```
 
+A matched sentence can still be ineligible. The sentence stays attached so a reviewer can see why it was rejected:
+
+```json
+{
+  "id": "e9",
+  "route": "review",
+  "eligible": false,
+  "evidence": [
+    {
+      "code": "H25.11",
+      "span": "Exam of the right eye (OD) shows no cataract and a clear lens.",
+      "valid": false
+    }
+  ],
+  "flags": [
+    {
+      "code": "negated_span",
+      "detail": "The sentence mentions the code and also denies it."
+    }
+  ]
+}
+```
+
 ## Run
 
 ```bash
@@ -56,6 +81,7 @@ No third-party packages. Python 3.9+.
 
 - `src/prebill_gate/pipeline.py` — the gate
 - `data/encounters.json` — synthetic notes, draft claims, and gold routes
+- `data/phrasebook.json` — abbreviations recorded for one surgeon only
 - `scripts/evaluate.py` — overall score, plus a split that holds out a clinician
 
 Gold labels were written with the notes, before the scorer. The held-out clinician is there to show the evaluation habit: do not treat one author's notes as if they were new clinics.

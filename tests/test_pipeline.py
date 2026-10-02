@@ -9,10 +9,15 @@ from prebill_gate.pipeline import evaluate, gate_encounter
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "encounters.json"
+PHRASEBOOK = ROOT / "data" / "phrasebook.json"
 
 
 def _load():
     return json.loads(DATA.read_text())
+
+
+def _phrasebook():
+    return json.loads(PHRASEBOOK.read_text())
 
 
 class GateTests(unittest.TestCase):
@@ -20,6 +25,7 @@ class GateTests(unittest.TestCase):
         encounter = _load()[0]
         result = gate_encounter(encounter)
         self.assertEqual(result["route"], "submit")
+        self.assertTrue(result["eligible"])
         self.assertEqual(result["flags"], [])
         self.assertGreaterEqual(result["confidence"], 0.8)
         spans = {item["code"]: item["span"] for item in result["evidence"]}
@@ -52,9 +58,41 @@ class GateTests(unittest.TestCase):
             {"thin_note", "missing_signature", "missing_laterality"} <= codes
         )
 
+    def test_a_denial_in_the_matched_sentence_is_not_eligible(self):
+        encounter = next(row for row in _load() if row["id"] == "e9")
+        result = gate_encounter(encounter, _phrasebook())
+        self.assertEqual(result["route"], "review")
+        self.assertFalse(result["eligible"])
+        item = result["evidence"][0]
+        self.assertIn("no cataract", item["span"].lower())
+        self.assertFalse(item["valid"])
+        self.assertIn("negated_span", {flag["code"] for flag in result["flags"]})
+
+    def test_the_other_eye_is_not_eligible(self):
+        encounter = next(row for row in _load() if row["id"] == "e10")
+        result = gate_encounter(encounter, _phrasebook())
+        self.assertFalse(result["eligible"])
+        self.assertIn("laterality_mismatch", {flag["code"] for flag in result["flags"]})
+        self.assertIsNotNone(result["evidence"][0]["span"])
+
+    def test_last_year_is_not_this_visit(self):
+        encounter = next(row for row in _load() if row["id"] == "e11")
+        result = gate_encounter(encounter, _phrasebook())
+        self.assertFalse(result["eligible"])
+        self.assertIn("not_this_visit", {flag["code"] for flag in result["flags"]})
+
+    def test_abbreviation_reads_only_for_the_surgeon_who_uses_it(self):
+        book = _phrasebook()
+        own = gate_encounter(next(row for row in _load() if row["id"] == "e12"), book)
+        other = gate_encounter(next(row for row in _load() if row["id"] == "e13"), book)
+        self.assertTrue(own["eligible"])
+        self.assertIn("cataract extraction", own["evidence"][0]["reading"])
+        self.assertFalse(other["eligible"])
+        self.assertIsNone(other["evidence"][0]["span"])
+
     def test_gold_routes_match_and_held_out_clinician_is_separate(self):
         rows = _load()
-        report = evaluate(rows, holdout_clinician="c3")
+        report = evaluate(rows, holdout_clinician="c3", phrasebook=_phrasebook())
         self.assertEqual(report["all"]["route_accuracy"], 1.0)
         self.assertEqual(report["held_out_clinician"]["n"], 2)
         self.assertEqual(report["held_out_clinician"]["route_accuracy"], 1.0)
