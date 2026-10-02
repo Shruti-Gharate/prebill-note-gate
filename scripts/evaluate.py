@@ -26,6 +26,9 @@ def main() -> None:
         flags = ", ".join(flag["code"] for flag in result["flags"]) or "none"
         mark = "ok" if result["route"] == row["gold_route"] else "MISS"
         print(f"{row['id']}  {result['route']:6}  gold={row['gold_route']:6}  {mark}  flags: {flags}")
+        for item in result["evidence"]:
+            span = item["span"] if item["span"] else "—"
+            print(f"    {item['code']:8}  {span}")
 
 
 if __name__ == "__main__":

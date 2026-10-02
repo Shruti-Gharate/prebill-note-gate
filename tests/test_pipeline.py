@@ -22,12 +22,20 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["route"], "submit")
         self.assertEqual(result["flags"], [])
         self.assertGreaterEqual(result["confidence"], 0.8)
+        spans = {item["code"]: item["span"] for item in result["evidence"]}
+        self.assertIn("cataract", spans["H25.11"].lower())
+        self.assertIn("oct", spans["92134"].lower())
+        for span in spans.values():
+            self.assertIn(span, encounter["note"])
 
     def test_extraction_on_claim_without_a_procedure_in_the_note_is_held(self):
         encounter = next(row for row in _load() if row["id"] == "e2")
         result = gate_encounter(encounter)
         self.assertEqual(result["route"], "review")
         self.assertIn("unsupported_code", {flag["code"] for flag in result["flags"]})
+        spans = {item["code"]: item["span"] for item in result["evidence"]}
+        self.assertIn("cataract", spans["H25.12"].lower())
+        self.assertIsNone(spans["66984"])
 
     def test_injection_described_but_missing_from_the_claim_is_held(self):
         encounter = next(row for row in _load() if row["id"] == "e5")

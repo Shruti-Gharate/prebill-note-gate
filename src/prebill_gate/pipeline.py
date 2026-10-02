@@ -39,17 +39,42 @@ def _norm(text: str) -> str:
     return text.lower()
 
 
-def _supported(description: str, note: str) -> bool:
-    haystack = _norm(note)
+def _lookup(description: str) -> tuple[str, tuple[str, ...]]:
+    """Phrases that can support a claim description, and how to match them.
+
+    Prefer the longest lexicon key so "cataract extraction" is not treated
+    as supported just because the note says "cataract".
+    """
     key = _norm(description)
     matches = [name for name in SUPPORT if name in key]
     if matches:
-        # Prefer the longest phrase so "cataract extraction" is not
-        # treated as supported just because the note says "cataract".
         name = max(matches, key=len)
-        return any(phrase in haystack for phrase in SUPPORT[name])
-    words = [w for w in re.findall(r"[a-z]{4,}", key)]
-    return bool(words) and all(word in haystack for word in words)
+        return "phrase", SUPPORT[name]
+    words = tuple(w for w in re.findall(r"[a-z]{4,}", key))
+    return "words", words
+
+
+def _sentences(note: str) -> list[str]:
+    parts = re.split(r"(?<=[.])\s+", note.strip())
+    return [part.strip() for part in parts if part.strip()]
+
+
+def _sentence_has_support(sentence: str, mode: str, phrases: tuple[str, ...]) -> bool:
+    lowered = sentence.lower()
+    if mode == "phrase":
+        return any(phrase in lowered for phrase in phrases)
+    return bool(phrases) and all(word in lowered for word in phrases)
+
+
+def _evidence_span(description: str, note: str) -> str | None:
+    """Return the note sentence that supports a claim line, or None."""
+    mode, phrases = _lookup(description)
+    if not phrases:
+        return None
+    for sentence in _sentences(note):
+        if _sentence_has_support(sentence, mode, phrases):
+            return sentence
+    return None
 
 
 def _mentioned_procedures(note: str) -> list[str]:
@@ -77,10 +102,11 @@ def _needs_laterality(note: str) -> bool:
 
 
 def gate_encounter(encounter: dict) -> dict:
-    """Return a route, a confidence, and the flags that drove the route."""
+    """Return a route, the sentence behind each code, and the flags that drove the route."""
     note = encounter.get("note") or ""
     claim = encounter.get("claim") or []
     flags: list[dict] = []
+    evidence: list[dict] = []
 
     if len(note.strip()) < MIN_NOTE_CHARS:
         flags.append(
@@ -106,11 +132,14 @@ def gate_encounter(encounter: dict) -> dict:
 
     for item in claim:
         description = item.get("description") or item.get("code") or ""
-        if not _supported(description, note):
+        code = item.get("code", description)
+        span = _evidence_span(description, note)
+        evidence.append({"code": code, "span": span})
+        if span is None:
             flags.append(
                 {
                     "code": "unsupported_code",
-                    "detail": f"Claim lists {item.get('code', description)}, which the note does not support.",
+                    "detail": f"Claim lists {code}, which the note does not support.",
                 }
             )
 
@@ -139,6 +168,7 @@ def gate_encounter(encounter: dict) -> dict:
         "encounter_id": encounter.get("id"),
         "route": route,
         "confidence": confidence,
+        "evidence": evidence,
         "flags": flags,
     }
 

@@ -22,6 +22,27 @@ On each synthetic encounter the gate looks for:
 
 `submit` means none of those fired. Anything else is `review`.
 
+Each claim line also returns the sentence that supports it. A missing sentence is the unsupported-code flag. A downstream agent can quote that span, and a reviewer can check it without opening the rest of the chart.
+
+```json
+{
+  "id": "e1",
+  "route": "submit",
+  "confidence": 0.9,
+  "evidence": [
+    {
+      "code": "H25.11",
+      "span": "Exam of the right eye (OD) shows a visually significant cataract."
+    },
+    {
+      "code": "92134",
+      "span": "OCT of the right eye shows no macular edema."
+    }
+  ],
+  "flags": []
+}
+```
+
 ## Run
 
 ```bash
